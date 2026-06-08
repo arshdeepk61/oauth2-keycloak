@@ -1,0 +1,287 @@
+{
+  "info": {
+    "name": "OAuth2 + Keycloak Demo",
+    "_postman_id": "a1b2c3d4-0000-4000-8000-000000000001",
+    "description": "Tests the OAuth2/OIDC flow for the oauth2-keycloak project.\n\nHOW IT WORKS:\n1. Run a request in '1. Keycloak' to obtain tokens (password grant). The test\n   script auto-saves access_token / refresh_token into collection variables.\n2. Then call '2. Resource Server' requests - they send Authorization: Bearer {{access_token}}.\n\nRECOMMENDED ORDER to see role-based access:\n  - 'Get Token (alice / USER)'  -> then /api/user = 200, /api/admin = 403\n  - 'Get Token (admin / ADMIN)' -> then /api/admin = 200\n\nPrereqs: Keycloak on :8081 (realm 'demo' imported) and resource-server on :8082.\nNote: the client-app (:8090) is a browser/redirect web app and is NOT REST-testable here.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "keycloakUrl", "value": "http://localhost:8081", "type": "string" },
+    { "key": "realm", "value": "demo", "type": "string" },
+    { "key": "clientId", "value": "demo-client", "type": "string" },
+    { "key": "clientSecret", "value": "demo-client-secret", "type": "string" },
+    { "key": "rsUrl", "value": "http://localhost:8082", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" },
+    { "key": "refresh_token", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Keycloak (Authorization Server)",
+      "item": [
+        {
+          "name": "Get Token (alice / USER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('has access_token', () => pm.expect(json.access_token).to.be.a('string'));",
+                  "pm.collectionVariables.set('access_token', json.access_token);",
+                  "pm.collectionVariables.set('refresh_token', json.refresh_token);",
+                  "console.log('Saved alice access_token (' + json.access_token.length + ' chars)');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "client_id", "value": "{{clientId}}", "type": "text" },
+                { "key": "client_secret", "value": "{{clientSecret}}", "type": "text" },
+                { "key": "grant_type", "value": "password", "type": "text" },
+                { "key": "username", "value": "alice", "type": "text" },
+                { "key": "password", "value": "alice", "type": "text" },
+                { "key": "scope", "value": "openid profile email", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakUrl}}"],
+              "path": ["realms", "{{realm}}", "protocol", "openid-connect", "token"]
+            },
+            "description": "Password (ROPC) grant for alice. Enabled in this demo realm for easy testing; avoid in production. Saves the access_token for the Resource Server requests."
+          }
+        },
+        {
+          "name": "Get Token (admin / ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('has access_token', () => pm.expect(json.access_token).to.be.a('string'));",
+                  "pm.collectionVariables.set('access_token', json.access_token);",
+                  "pm.collectionVariables.set('refresh_token', json.refresh_token);",
+                  "console.log('Saved admin access_token');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "client_id", "value": "{{clientId}}", "type": "text" },
+                { "key": "client_secret", "value": "{{clientSecret}}", "type": "text" },
+                { "key": "grant_type", "value": "password", "type": "text" },
+                { "key": "username", "value": "admin", "type": "text" },
+                { "key": "password", "value": "admin", "type": "text" },
+                { "key": "scope", "value": "openid profile email", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakUrl}}"],
+              "path": ["realms", "{{realm}}", "protocol", "openid-connect", "token"]
+            },
+            "description": "Password grant for admin (USER + ADMIN roles). Use this to make /api/admin return 200."
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('access_token', json.access_token);",
+                  "pm.collectionVariables.set('refresh_token', json.refresh_token);",
+                  "console.log('Refreshed access_token');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "client_id", "value": "{{clientId}}", "type": "text" },
+                { "key": "client_secret", "value": "{{clientSecret}}", "type": "text" },
+                { "key": "grant_type", "value": "refresh_token", "type": "text" },
+                { "key": "refresh_token", "value": "{{refresh_token}}", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
+              "host": ["{{keycloakUrl}}"],
+              "path": ["realms", "{{realm}}", "protocol", "openid-connect", "token"]
+            },
+            "description": "Exchanges the saved refresh_token for a fresh access_token - no re-login. Demonstrates the refresh_token grant."
+          }
+        },
+        {
+          "name": "UserInfo (OIDC)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/userinfo",
+              "host": ["{{keycloakUrl}}"],
+              "path": ["realms", "{{realm}}", "protocol", "openid-connect", "userinfo"]
+            },
+            "description": "The OIDC UserInfo endpoint. Returns identity claims for the user behind the current access_token."
+          }
+        },
+        {
+          "name": "Introspect Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "client_id", "value": "{{clientId}}", "type": "text" },
+                { "key": "client_secret", "value": "{{clientSecret}}", "type": "text" },
+                { "key": "token", "value": "{{access_token}}", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token/introspect",
+              "host": ["{{keycloakUrl}}"],
+              "path": ["realms", "{{realm}}", "protocol", "openid-connect", "token", "introspect"]
+            },
+            "description": "Asks Keycloak whether the saved token is active and returns its claims (RFC 7662). This is how you'd validate an OPAQUE token - contrast with the Resource Server, which validates the JWT locally without this call."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Resource Server (Protected API)",
+      "item": [
+        {
+          "name": "GET /api/public (no token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK - public needs no token', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{rsUrl}}/api/public",
+              "host": ["{{rsUrl}}"],
+              "path": ["api", "public"]
+            },
+            "description": "Open endpoint. Returns 200 with no Authorization header."
+          }
+        },
+        {
+          "name": "GET /api/user (Bearer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK with a USER/ADMIN token', () => pm.response.to.have.status(200));",
+                  "// Run 'Get Token' first. With no token this returns 401."
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{rsUrl}}/api/user",
+              "host": ["{{rsUrl}}"],
+              "path": ["api", "user"]
+            },
+            "description": "Requires a valid JWT whose owner has ROLE_USER or ROLE_ADMIN. No/invalid token = 401."
+          }
+        },
+        {
+          "name": "GET /api/admin (Bearer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// alice (USER) -> 403 ; admin (ADMIN) -> 200",
+                  "pm.test('200 or 403 depending on role', () => pm.expect([200,403]).to.include(pm.response.code));",
+                  "console.log('Status ' + pm.response.code + (pm.response.code===403 ? ' = authenticated but lacks ADMIN' : ''));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{rsUrl}}/api/admin",
+              "host": ["{{rsUrl}}"],
+              "path": ["api", "admin"]
+            },
+            "description": "Requires ROLE_ADMIN. With alice's token = 403 (authenticated but forbidden). With admin's token = 200. Demonstrates the 401-vs-403 distinction."
+          }
+        },
+        {
+          "name": "GET /api/user (forged token -> 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 - signature cannot be verified', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer not.a.valid.jwt" }
+            ],
+            "url": {
+              "raw": "{{rsUrl}}/api/user",
+              "host": ["{{rsUrl}}"],
+              "path": ["api", "user"]
+            },
+            "description": "A garbage token fails JWKS signature validation -> 401. Proves the server actually verifies signatures."
+          }
+        }
+      ]
+    }
+  ]
+}
