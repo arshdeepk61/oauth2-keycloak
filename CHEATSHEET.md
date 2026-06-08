@@ -3,7 +3,7 @@
 **Core line:** *OAuth2 = authorization framework (access token). OIDC = thin authentication layer on top (ID token). JWT = the token **format**. Keycloak = the server implementing all of it.*
 
 ### The 4 roles (map to this project)
-**Resource Owner** = user (alice) · **Client** = client-app:8080 (a.k.a. OIDC *Relying Party*) · **Authorization Server** = Keycloak:8081 (OIDC *Provider*) · **Resource Server** = resource-server:8082 (the API).
+**Resource Owner** = user (alice) · **Client** = client-app:8090 (a.k.a. OIDC *Relying Party*) · **Authorization Server** = Keycloak:8081 (OIDC *Provider*) · **Resource Server** = resource-server:8082 (the API).
 
 ### The 3 tokens
 | Token | For | Answers | Format | Life |

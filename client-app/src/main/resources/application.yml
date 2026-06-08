@@ -1,5 +1,5 @@
 server:
-  port: 8080   # the Client / web app the user actually visits
+  port: 8090   # the Client / web app the user actually visits
 
 spring:
   application:
@@ -24,7 +24,7 @@ spring:
             authorization-grant-type: authorization_code
             scope: openid,profile,email   # "openid" = ask for an ID Token (OIDC)
             # redirect-uri defaults to {baseUrl}/login/oauth2/code/{registrationId}
-            # i.e. http://localhost:8080/login/oauth2/code/keycloak
+            # i.e. http://localhost:8090/login/oauth2/code/keycloak
 
 # Where our protected API lives (used by HomeController + WebClient).
 resource-server:

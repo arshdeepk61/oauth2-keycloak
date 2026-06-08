@@ -8,7 +8,7 @@ There are two Spring Boot apps and one Keycloak:
 | Piece | Role in OAuth2 terms | Port | What it does |
 |-------|---------------------|------|--------------|
 | **Keycloak** (Docker) | Authorization Server + Identity Provider | 8081 | Logs users in, issues tokens (JWTs) |
-| **client-app** | OAuth2 Client / OIDC Relying Party | 8080 | The web app users visit; logs in via Keycloak; calls the API |
+| **client-app** | OAuth2 Client / OIDC Relying Party | 8090 | The web app users visit; logs in via Keycloak; calls the API |
 | **resource-server** | Resource Server | 8082 | Protected REST API; validates JWTs; enforces roles |
 
 > 📖 **Read [`CONCEPTS.md`](./CONCEPTS.md) for the full interview guide** (every term
@@ -33,7 +33,7 @@ There are two Spring Boot apps and one Keycloak:
         ▼                                             │
    ┌──────────┐  6. exchange code -> tokens (back ch) │
    │client-app│ ────────────────────────────────────►│
-   │ (8080)   │ ◄─────────────────────────────────────  7. id_token + access_token
+   │ (8090)   │ ◄─────────────────────────────────────  7. id_token + access_token
    └────┬─────┘                                       
         │  8. call API with  Authorization: Bearer <access_token>
         ▼
@@ -91,7 +91,7 @@ cd client-app
 ..\mvnw.cmd spring-boot:run
 ```
 
-Then open **http://localhost:8080** and click **Login with Keycloak**.
+Then open **http://localhost:8090** and click **Login with Keycloak**.
 
 ### Test users
 

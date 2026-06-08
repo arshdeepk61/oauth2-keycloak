@@ -30,7 +30,7 @@ is the single most important thing in this interview.
 Map these onto this project — interviewers love this.
 
 1. **Resource Owner** — the human/user who owns the data. → *alice*.
-2. **Client** — the app that wants to act on the user's behalf. → **client-app** (port 8080).
+2. **Client** — the app that wants to act on the user's behalf. → **client-app** (port 8090).
 3. **Authorization Server** — authenticates the user and issues tokens. → **Keycloak** (8081).
 4. **Resource Server** — hosts the protected API, accepts tokens. → **resource-server** (8082).
 

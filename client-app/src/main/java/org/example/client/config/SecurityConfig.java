@@ -55,7 +55,7 @@ public class SecurityConfig {
     private OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler(ClientRegistrationRepository clients) {
         OidcClientInitiatedLogoutSuccessHandler handler =
                 new OidcClientInitiatedLogoutSuccessHandler(clients);
-        handler.setPostLogoutRedirectUri("http://localhost:8080/");
+        handler.setPostLogoutRedirectUri("http://localhost:8090/");
         return handler;
     }
 }

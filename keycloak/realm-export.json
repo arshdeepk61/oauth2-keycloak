@@ -27,13 +27,13 @@
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://localhost:8080/*"
+        "http://localhost:8090/*"
       ],
       "webOrigins": [
-        "http://localhost:8080"
+        "http://localhost:8090"
       ],
       "attributes": {
-        "post.logout.redirect.uris": "http://localhost:8080/*",
+        "post.logout.redirect.uris": "http://localhost:8090/*",
         "pkce.code.challenge.method": "S256"
       },
       "fullScopeAllowed": true
