@@ -1,0 +1,35 @@
+server:
+  port: 8080   # the Client / web app the user actually visits
+
+spring:
+  application:
+    name: client-app
+  security:
+    oauth2:
+      client:
+        # A "provider" describes WHERE the identity provider is. issuer-uri lets
+        # Spring auto-discover all of Keycloak's endpoints (authorize, token,
+        # jwks, userinfo, end-session) from one URL.
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8081/realms/demo
+            # Use Keycloak's preferred_username as the display name principal.
+            user-name-attribute: preferred_username
+        # A "registration" describes WHO we are to that provider - our client id,
+        # secret, which grant to use, and what scopes to request.
+        registration:
+          keycloak:
+            client-id: demo-client
+            client-secret: demo-client-secret
+            authorization-grant-type: authorization_code
+            scope: openid,profile,email   # "openid" = ask for an ID Token (OIDC)
+            # redirect-uri defaults to {baseUrl}/login/oauth2/code/{registrationId}
+            # i.e. http://localhost:8080/login/oauth2/code/keycloak
+
+# Where our protected API lives (used by HomeController + WebClient).
+resource-server:
+  base-url: http://localhost:8082
+
+logging:
+  level:
+    org.springframework.security: INFO

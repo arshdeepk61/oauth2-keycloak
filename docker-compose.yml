@@ -1,0 +1,28 @@
+# Boots Keycloak (the Identity Provider / Authorization Server) with a realm
+# that is fully pre-configured on startup - client, roles, and test users.
+#
+#   docker compose up
+#
+# Admin console:  http://localhost:8081  (admin / admin)
+# Our realm:      http://localhost:8081/realms/demo
+#
+# We run ONLY Keycloak in Docker and run the two Spring apps on the host. That
+# way both the browser and the apps reach Keycloak at the same address
+# (localhost:8081), which keeps the token "issuer" consistent and avoids the
+# classic Docker-networking issuer-mismatch headache.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    command:
+      - start-dev          # dev mode: no HTTPS required, in-memory DB
+      - --import-realm      # import any realm json found in /opt/keycloak/data/import
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin     # master-realm admin login
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8081
+    ports:
+      - "8081:8081"
+    volumes:
+      # Mount our realm definition so --import-realm picks it up on first boot.
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Profile</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; line-height: 1.5; }
+        pre { background: #f4f4f5; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Your Profile</h1>
+    <p>This comes from the <strong>ID Token</strong> (OIDC authentication).</p>
+    <ul>
+        <li>Username: <strong th:text="${name}">name</strong></li>
+        <li>Email: <strong th:text="${email}">email</strong></li>
+    </ul>
+    <h3>All ID Token claims</h3>
+    <pre th:text="${claims}">claims</pre>
+    <a href="/">&larr; Back</a>
+</body>
+</html>

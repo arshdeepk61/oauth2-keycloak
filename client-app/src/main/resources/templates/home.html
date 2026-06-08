@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <title>OAuth2 + Keycloak Demo</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; line-height: 1.5; }
+        a.button { display: inline-block; padding: 8px 14px; margin: 4px 0; background: #2563eb;
+                   color: #fff; text-decoration: none; border-radius: 6px; }
+        .muted { color: #666; }
+    </style>
+</head>
+<body>
+    <h1>OAuth2 + OIDC + Keycloak Demo</h1>
+
+    <!-- Shown only when NOT authenticated -->
+    <div sec:authorize="!isAuthenticated()">
+        <p class="muted">You are not logged in.</p>
+        <!-- Hitting any protected URL triggers the redirect to Keycloak.
+             /oauth2/authorization/keycloak is Spring's built-in login entry point. -->
+        <a class="button" href="/oauth2/authorization/keycloak">Login with Keycloak</a>
+    </div>
+
+    <!-- Shown only when authenticated -->
+    <div sec:authorize="isAuthenticated()">
+        <p>Logged in as <strong sec:authentication="name">user</strong>.</p>
+        <p>
+            <a class="button" href="/profile">My Profile (from ID Token)</a>
+            <a class="button" href="/call-api">Call protected API (with Access Token)</a>
+        </p>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

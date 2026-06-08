@@ -1,0 +1,22 @@
+server:
+  port: 8082   # Resource Server (the protected API)
+
+spring:
+  application:
+    name: resource-server
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # The single most important line. Spring takes this issuer URL and:
+          #   1. Calls <issuer-uri>/.well-known/openid-configuration to discover
+          #      Keycloak's endpoints.
+          #   2. Downloads the JWKS (Keycloak's public signing keys).
+          #   3. On every request, validates the token signature with those keys,
+          #      and checks that the token's "iss" claim equals this issuer and
+          #      that it is not expired.
+          issuer-uri: http://localhost:8081/realms/demo
+
+logging:
+  level:
+    org.springframework.security: INFO   # bump to DEBUG to watch token validation

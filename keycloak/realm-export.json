@@ -1,0 +1,69 @@
+{
+  "realm": "demo",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "accessTokenLifespan": 300,
+
+  "roles": {
+    "realm": [
+      { "name": "USER",  "description": "Standard application user" },
+      { "name": "ADMIN", "description": "Administrator with elevated access" }
+    ]
+  },
+
+  "clients": [
+    {
+      "clientId": "demo-client",
+      "name": "Spring Client App",
+      "description": "The Spring Boot OAuth2/OIDC client (confidential).",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "demo-client-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:8080/*"
+      ],
+      "webOrigins": [
+        "http://localhost:8080"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:8080/*",
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": true
+    }
+  ],
+
+  "users": [
+    {
+      "username": "alice",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "User",
+      "email": "alice@example.com",
+      "credentials": [
+        { "type": "password", "value": "alice", "temporary": false }
+      ],
+      "realmRoles": ["USER"]
+    },
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Adam",
+      "lastName": "Admin",
+      "email": "admin@example.com",
+      "credentials": [
+        { "type": "password", "value": "admin", "temporary": false }
+      ],
+      "realmRoles": ["USER", "ADMIN"]
+    }
+  ]
+}

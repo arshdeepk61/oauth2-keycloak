@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>API Result</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 820px; margin: 40px auto; line-height: 1.5; }
+        pre { background: #f4f4f5; padding: 12px; border-radius: 6px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+        h3 { margin-top: 24px; }
+    </style>
+</head>
+<body>
+    <h1>Calling the Resource Server</h1>
+
+    <h3>Access Token (paste into jwt.io to decode)</h3>
+    <pre th:text="${accessToken}">token</pre>
+
+    <h3>GET /api/user &rarr; response</h3>
+    <pre th:text="${userResponse}">user</pre>
+
+    <h3>GET /api/admin &rarr; response</h3>
+    <pre th:text="${adminResponse}">admin</pre>
+
+    <a href="/">&larr; Back</a>
+</body>
+</html>
