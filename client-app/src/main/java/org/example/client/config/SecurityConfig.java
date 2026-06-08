@@ -44,12 +44,14 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** Wraps the default resolver and switches on PKCE (S256 code challenge). */
+    /** Wraps the default resolver, switches on PKCE (S256), then wraps it again
+     *  in a logging resolver so we can SEE the generated request (incl. the
+     *  server-side-only code_verifier). */
     private OAuth2AuthorizationRequestResolver pkceResolver(ClientRegistrationRepository clients) {
         DefaultOAuth2AuthorizationRequestResolver resolver =
                 new DefaultOAuth2AuthorizationRequestResolver(clients, "/oauth2/authorization");
         resolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());
-        return resolver;
+        return new LoggingAuthorizationRequestResolver(resolver);
     }
 
     private OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler(ClientRegistrationRepository clients) {

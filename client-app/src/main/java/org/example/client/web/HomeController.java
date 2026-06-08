@@ -46,6 +46,7 @@ public class HomeController {
     public String profile(@AuthenticationPrincipal OidcUser oidcUser, HttpSession session, Model model) {
         // session.getId() == the value behind the JSESSIONID cookie in your browser.
         // The tokens are stored server-side AGAINST this session, not in the browser.
+        log.info(oidcUser.toString());
         log.info("/profile | sessionId={} | sub={} | user={} | id_token expiresAt={}",
                 session.getId(), oidcUser.getSubject(), oidcUser.getPreferredUsername(), oidcUser.getExpiresAt());
         model.addAttribute("name", oidcUser.getPreferredUsername());
